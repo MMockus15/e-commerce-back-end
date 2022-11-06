@@ -6,23 +6,87 @@ const { Tag, Product, ProductTag } = require('../../models');
 router.get('/', (req, res) => {
   // find all tags
   // be sure to include its associated Product data
+  Tag.findAll({
+    include: [{ model: Product }],
+  })
+    .then((data) => {
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(404).json(err);
+    });
 });
 
 router.get('/:id', (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
+  Tag.findOne({
+    where: {
+      id: req.params.id
+    },
+    include: [{ model: Product }],
+  })
+  .then((data) => {
+    res.status(200).json(data);
+  })
+  .catch((err) => {
+    console.log(err);
+    res.status(404).json(err);
+  });
 });
 
+///returning NULL
 router.post('/', (req, res) => {
   // create a new tag
+  Tag.create(req.body)
+  .then((tag) => {
+    if (req.body.tagIds.length) {
+      const tagIdArr = req.body.tagIds.map((tag_id) => {
+        return {
+          tag_id: tag.id, tag_id,
+        }
+      })
+      return Tag.bulkCreate(tagIdArr);
+    }
+    res.status(200).json(tag);
+  })
+  .then((tagIdArr) => res.status(200).json(tagIdArr))
+  .catch((err) => {
+    console.log(err);
+    res.status(400).json(err);
+  })
 });
 
+
+///returning array 0
 router.put('/:id', (req, res) => {
   // update a tag's name by its `id` value
+  Tag.update(req.body, {
+    where: {
+      id: req.params.id,
+    },
+  })
+  .then((data) => res.json(data))
+  .catch((err) => {
+    console.log(err);
+  })
 });
 
 router.delete('/:id', (req, res) => {
   // delete on tag by its `id` value
+  Tag.destroy({
+    where: {
+      id: req.params.id
+    },
+  })
+  .then((data) => {
+    res.status(200).json(data);
+  })
+  .catch((err) => {
+    console.log(err);
+    res.status(404).json(err);
+  })
 });
 
 module.exports = router;
