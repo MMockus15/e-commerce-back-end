@@ -39,18 +39,9 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   // create a new category
   Category.create(req.body)
-  .then((category) => {
-    if (req.body.categoryIds.length) {
-      const categoryIdArr = req.body.categoryIds.map((category_id) => {
-        return {
-          category_id: category.id, category_id,
-        }
-      })
-      return Category.bulkCreate(categoryIdArr);
-    }
-    res.status(200).json(category);
+  .then((data) => {
+    res.status(200).json(data)
   })
-  .then((categoryIdArr) => res.status(200).json(categoryIdArr))
   .catch((err) => {
     console.log(err);
     res.status(400).json(err);
@@ -60,7 +51,7 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   // update a category by its `id` value
-  Category.update(req.body, {
+  Category.update({
     category_name: req.body.category_name,
   },
   {
@@ -77,7 +68,7 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   // delete a category by its `id` value
-  Category.distroy({
+  Category.destroy({
       where: {
         id: req.params.id
       },

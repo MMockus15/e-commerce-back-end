@@ -36,22 +36,12 @@ router.get('/:id', (req, res) => {
   });
 });
 
-///returning NULL
+
 router.post('/', (req, res) => {
   // create a new tag
+  //req.body should be {"tag_name": "______"}
   Tag.create(req.body)
-  .then((tag) => {
-    if (req.body.tagIds.length) {
-      const tagIdArr = req.body.tagIds.map((tag_id) => {
-        return {
-          tag_id: tag.id, tag_id,
-        }
-      })
-      return Tag.bulkCreate(tagIdArr);
-    }
-    res.status(200).json(tag);
-  })
-  .then((tagIdArr) => res.status(200).json(tagIdArr))
+  .then((data) => res.status(200).json(data))
   .catch((err) => {
     console.log(err);
     res.status(400).json(err);
@@ -59,7 +49,6 @@ router.post('/', (req, res) => {
 });
 
 
-///returning array 0
 router.put('/:id', (req, res) => {
   // update a tag's name by its `id` value
   Tag.update(req.body, {
